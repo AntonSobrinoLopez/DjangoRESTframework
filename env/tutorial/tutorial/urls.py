@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.urls import include, path
 from rest_framework import routers
-from quickstart import views
+from quickstart import views as viewsqs
 from django.contrib import admin
+from snippets import views as viewsnippets
+
+
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+router.register(r'users', viewsqs.UserViewSet)
+router.register(r'groups', viewsqs.GroupViewSet)
 
 
 # Wire up our API using automatic URL routing.
@@ -28,6 +31,8 @@ router.register(r'groups', views.GroupViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('snippets/list/', viewsnippets.snippet_list),
+    path('snippets/<int:pk>/', viewsnippets.snippet_detail),
 ]
 
