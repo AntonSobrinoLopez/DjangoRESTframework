@@ -18,6 +18,7 @@ from rest_framework import routers
 from quickstart import views as viewsqs
 from django.contrib import admin
 from snippets import views as viewsnippets
+from rest_framework.urlpatterns import format_suffix_patterns
 
 
 
@@ -32,7 +33,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('snippets/list/', viewsnippets.snippet_list),
+    path('snippets/', viewsnippets.snippet_list),
     path('snippets/<int:pk>/', viewsnippets.snippet_detail),
+    path('snippets_3/', viewsnippets.SnippetList.as_view()),
+    path('snippets_3/<int:pk>/', viewsnippets.SnippetDetail.as_view()),
+    path('snippets_3_Mixins/', viewsnippets.SnippetList_Mixins.as_view()),
+    path('snippets_3__Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view()), #no funciona
+    path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view()),
+    path('snippets_3__Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view()), #no funciona
 ]
+
+# urlpatterns = format_suffix_patterns(urlpatterns)
 
