@@ -42,8 +42,15 @@ from rest_framework import permissions
 #(Tutorial 4 Object level permissions)
 from snippets.permissions import IsOwnerOrReadOnly
 
-#to do a POST, "@csrf_exempt" will be mandatory
+#(Tutorial 5 Creating an endpoint for the root of our API )
+# from rest_framework.decorators import api_view 
+# from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
+# (tutorial 5 Creating an endpoint for the highlighted snippets)
+from rest_framework import renderers
+
+#to do a POST, "@csrf_exempt" will be mandatory
 @csrf_exempt
 def snippet_list(request, format=None):
     """
@@ -111,8 +118,6 @@ def snippet_list_1(request):
     ## adding in tutorial 4 to associate snippets with users
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -265,3 +270,20 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+#(Tutorial 5 Creating an endpoint for the root of our API )
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'users': reverse('user-list', request=request, format=format),
+        'snippets': reverse('snippet-list', request=request, format=format)
+    })
+
+class SnippetHighlight(generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    renderer_classes = [renderers.StaticHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
