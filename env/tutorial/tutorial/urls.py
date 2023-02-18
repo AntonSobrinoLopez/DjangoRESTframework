@@ -33,6 +33,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/', include('rest_framework.urls')), #tutorial 4 Adding login to the Browsable API 
     path('snippets/', viewsnippets.snippet_list),
     path('snippets/<int:pk>/', viewsnippets.snippet_detail),
     path('snippets_3/', viewsnippets.SnippetList.as_view()),
@@ -41,6 +42,8 @@ urlpatterns = [
     path('snippets_3__Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view()), #no funciona
     path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view()),
     path('snippets_3__Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view()), #no funciona
+    path('users/', viewsnippets.UserList.as_view()), #tutorial 4
+    path('users/<int:pk>/', viewsnippets.UserDetail.as_view()), #Tutorial 4
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)
