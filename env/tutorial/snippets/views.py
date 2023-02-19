@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer, SnippetSerializer_Model
+from snippets.serializers import SnippetSerializer, SnippetSerializer_Model,SnippetSerializer_1
 
 # add in tutorial 2
 from rest_framework import status
@@ -33,7 +33,7 @@ from rest_framework import generics
 # (Tutorial 4 adding endpoints for our User models)
 
 from django.contrib.auth.models import User
-from snippets.serializers import UserSerializer_Model, UserSerializer
+from snippets.serializers import UserSerializer_Model,UserSerializer
 
 # (tutorial 4 Adding required permissions to views)
 
@@ -49,6 +49,14 @@ from rest_framework.reverse import reverse
 
 # (tutorial 5 Creating an endpoint for the highlighted snippets)
 from rest_framework import renderers
+
+#(Tutorial 6 Refactoring to use ViewSets) 
+
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import permissions
+
 
 #to do a POST, "@csrf_exempt" will be mandatory
 @csrf_exempt
@@ -131,7 +139,7 @@ def snippet_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = SnippetSerializer(snippet)
+        serializer = SnippetSerializer_Model(snippet)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
@@ -176,7 +184,8 @@ class SnippetDetail(APIView):
     # (tutorial 4 Adding required permissions to views)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly] UPDATE for this one
     #(Tutorial 4 Object level permissions)
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_object(self, pk):
         try:
@@ -229,7 +238,7 @@ class SnippetDetail__Mixins(mixins.RetrieveModelMixin,
     # (tutorial 4 Adding required permissions to views)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly] UPDATE for this one
     #(Tutorial 4 Object level permissions)
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -257,7 +266,7 @@ class SnippetDetail_Generic(generics.RetrieveUpdateDestroyAPIView):
     # (tutorial 4 Adding required permissions to views)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly] UPDATE for this one
     #(Tutorial 4 Object level permissions)
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 # (Tutorial 4 adding endpoints for our User models)
@@ -287,3 +296,34 @@ class SnippetHighlight(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         snippet = self.get_object()
         return Response(snippet.highlighted)
+
+
+#(Tutorial 6 Refactoring to use ViewSets) 
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class SnippetViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

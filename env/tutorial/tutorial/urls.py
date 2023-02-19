@@ -20,11 +20,30 @@ from django.contrib import admin
 from snippets import views as viewsnippets
 from rest_framework.urlpatterns import format_suffix_patterns
 
+#(Tutorial 6 Refactoring to use ViewSets) 
+from snippets.views import SnippetViewSet, UserViewSet, api_root
+from rest_framework import renderers
+# from django.urls import path, include done up
+from rest_framework.routers import DefaultRouter 
+# from snippets import views done up
+
+#(Tutorial 6 Refactoring to use ViewSets) 
+snippet_list = SnippetViewSet.as_view({'get': 'list','post': 'create'})
+snippet_detail = SnippetViewSet.as_view({'get': 'retrieve','put': 'update','patch': 'partial_update', 'delete': 'destroy'})
+snippet_highlight = SnippetViewSet.as_view({'get': 'highlight'}, renderer_classes=[renderers.StaticHTMLRenderer])
+user_list = UserViewSet.as_view({'get': 'list'})
+user_detail = UserViewSet.as_view({'get': 'retrieve' })
+
 
 
 router = routers.DefaultRouter()
 router.register(r'users', viewsqs.UserViewSet)
 router.register(r'groups', viewsqs.GroupViewSet)
+
+#(Tutorial 6 Refactoring to use ViewSets)  Using routes
+router_6 = DefaultRouter()
+router_6.register(r'snippets', viewsnippets.SnippetViewSet,basename="snippet")
+router_6.register(r'users', viewsnippets.UserViewSet,basename="user")
 
 
 # Wire up our API using automatic URL routing.
@@ -34,18 +53,26 @@ urlpatterns =[
     path('', include(router.urls)),
     path('', viewsnippets.api_root),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api-auth/', include('rest_framework.urls')), #tutorial 4 Adding login to the Browsable API 
-    path('snippets1/', viewsnippets.snippet_list),
-    path('snippets1/<int:pk>/', viewsnippets.snippet_detail),
-    path('snippets_3/', viewsnippets.SnippetList.as_view()),
-    path('snippets_3/<int:pk>/', viewsnippets.SnippetDetail.as_view()),
-    path('snippets_3_Mixins/', viewsnippets.SnippetList_Mixins.as_view(),),
-    path('snippets_3__Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view()), #no funciona
-    path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view()),
-    path('snippets_3__Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view()), #no funciona
-    path('users/', viewsnippets.UserList.as_view()), #tutorial 4
-    path('users/<int:pk>/', viewsnippets.UserDetail.as_view()), #Tutorial 4
-    path('snippets/<int:pk>/highlight/', viewsnippets.SnippetHighlight.as_view()), #no funciona
+    # path('api-auth/', include('rest_framework.urls')), #tutorial 4 Adding login to the Browsable API 
+    path('snippets1/', viewsnippets.snippet_list,name='snippet_list'),
+    path('snippets1/<int:pk>/', viewsnippets.snippet_detail, name='snippet_detail'),
+    path('snippets_3/', viewsnippets.SnippetList.as_view(),name='viewsnippets.SnippetList'),
+    path('snippets_3/<int:pk>/', viewsnippets.SnippetDetail.as_view(),name='viewsnippets.SnippetDetail'),
+    path('snippets_3_Mixins/', viewsnippets.SnippetList_Mixins.as_view(),name='viewsnippets.SnippetList_Mixins'),
+    path('snippets_3_Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view(),name='viewsnippets.SnippetDetail__Mixins'), 
+    path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view(),name='viewsnippets.SnippetList_Generic'),
+    path('snippets_3_Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view(),name='viewsnippets.SnippetDetail_Generic'),
+    path('users/', viewsnippets.UserList.as_view(),name='viewsnippets.UserList'), #tutorial 4
+    path('users/<int:pk>/', viewsnippets.UserDetail.as_view(),name='viewsnippets.UserDetail'), #Tutorial 4
+    path('snippets/<int:pk>/highlight/', viewsnippets.SnippetHighlight.as_view(),name='viewsnippets.SnippetHighlight'), #no funciona
+    #(Tutorial 6 Refactoring to use ViewSets) 
+     path('_6/', include(router.urls)),
+    path('_6_6/', api_root),
+    path('snippets_6/', snippet_list, name='snippet-list'),
+    path('snippets_6/<int:pk>/', snippet_detail, name='snippet-detail'),
+    path('snippets_6/<int:pk>/highlight/', snippet_highlight, name='snippet-highlight'),
+    path('users_6/', user_list, name='user-list'),
+    path('users_6/<int:pk>/', user_detail, name='user-detail')
 ]
 #'snippets/1/highlight/'
 # urlpatterns = format_suffix_patterns(urlpatterns)
