@@ -35,17 +35,17 @@ urlpatterns =[
     path('', viewsnippets.api_root),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api-auth/', include('rest_framework.urls')), #tutorial 4 Adding login to the Browsable API 
-    path('snippets/', viewsnippets.snippet_list, name='snippet_list'),
-    path('snippets/<int:pk>/', viewsnippets.snippet_detail,name='snippet_detail'),
-    path('snippets_3/', viewsnippets.SnippetList.as_view(), name='viewsnippets.SnippetList'),
-    path('snippets_3/<int:pk>/', viewsnippets.SnippetDetail.as_view(),name='viewsnippets.SnippetDetail'),
-    path('snippets_3_Mixins/', viewsnippets.SnippetList_Mixins.as_view(), name='viewsnippets.SnippetList_Mixins'),
-    path('snippets_3__Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view(),name='viewsnippets.SnippetDetail__Mixins'), #no funciona
-    path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view(),name='viewsnippets.SnippetList_Generic'),
-    path('snippets_3__Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view(),name='iewsnippets.SnippetDetail_Generic'), #no funciona
-    path('users/', viewsnippets.UserList.as_view(),name='viewsnippets.UserList'), #tutorial 4
-    path('users/<int:pk>/', viewsnippets.UserDetail.as_view(),name='viewsnippets.UserDetail'), #Tutorial 4
-    path('snippets/<int:pk>/highlight/', viewsnippets.SnippetHighlight.as_view(),name='viewsnippets.SnippetHighlight'), #no funciona
+    path('snippets1/', viewsnippets.snippet_list),
+    path('snippets1/<int:pk>/', viewsnippets.snippet_detail),
+    path('snippets_3/', viewsnippets.SnippetList.as_view()),
+    path('snippets_3/<int:pk>/', viewsnippets.SnippetDetail.as_view()),
+    path('snippets_3_Mixins/', viewsnippets.SnippetList_Mixins.as_view(),),
+    path('snippets_3__Mixins/<int:pk>/', viewsnippets.SnippetDetail__Mixins.as_view()), #no funciona
+    path('snippets_3_Generic/', viewsnippets.SnippetList_Generic.as_view()),
+    path('snippets_3__Generic/<int:pk>/', viewsnippets.SnippetDetail_Generic.as_view()), #no funciona
+    path('users/', viewsnippets.UserList.as_view()), #tutorial 4
+    path('users/<int:pk>/', viewsnippets.UserDetail.as_view()), #Tutorial 4
+    path('snippets/<int:pk>/highlight/', viewsnippets.SnippetHighlight.as_view()), #no funciona
 ]
 #'snippets/1/highlight/'
 # urlpatterns = format_suffix_patterns(urlpatterns)

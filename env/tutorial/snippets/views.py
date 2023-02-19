@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
+from snippets.serializers import SnippetSerializer, SnippetSerializer_Model
 
 # add in tutorial 2
 from rest_framework import status
@@ -33,7 +33,7 @@ from rest_framework import generics
 # (Tutorial 4 adding endpoints for our User models)
 
 from django.contrib.auth.models import User
-from snippets.serializers import UserSerializer
+from snippets.serializers import UserSerializer_Model, UserSerializer
 
 # (tutorial 4 Adding required permissions to views)
 
@@ -58,12 +58,12 @@ def snippet_list(request, format=None):
     """
     if request.method == 'GET':
         snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
+        serializer = SnippetSerializer_Model(snippets, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = SnippetSerializer(data=data)
+        serializer = SnippetSerializer_Model(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
@@ -80,12 +80,12 @@ def snippet_detail(request, pk, format=None):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = SnippetSerializer(snippet)
+        serializer = SnippetSerializer_Model(snippet)
         return JsonResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = SnippetSerializer(snippet, data=data)
+        serializer = SnippetSerializer_Model(snippet, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
@@ -105,11 +105,11 @@ def snippet_list_1(request):
     """
     if request.method == 'GET':
         snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
+        serializer = SnippetSerializer_Model(snippets, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = SnippetSerializer(data=request.data)
+        serializer = SnippetSerializer_Model(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -135,7 +135,7 @@ def snippet_detail(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = SnippetSerializer(snippet, data=request.data)
+        serializer = SnippetSerializer_Model(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -154,11 +154,11 @@ class SnippetList(APIView):
     """
     def get(self, request, format=None):
         snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
+        serializer = SnippetSerializer_Model(snippets, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = SnippetSerializer(data=request.data)
+        serializer = SnippetSerializer_Model(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -186,12 +186,12 @@ class SnippetDetail(APIView):
 
     def get(self, request, pk, format=None):
         snippet = self.get_object(pk)
-        serializer = SnippetSerializer(snippet)
+        serializer = SnippetSerializer_Model(snippet)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         snippet = self.get_object(pk)
-        serializer = SnippetSerializer(snippet, data=request.data)
+        serializer = SnippetSerializer_Model(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -208,7 +208,7 @@ class SnippetList_Mixins (mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
     queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
+    serializer_class = SnippetSerializer_Model
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -225,7 +225,7 @@ class SnippetDetail__Mixins(mixins.RetrieveModelMixin,
                     mixins.DestroyModelMixin,
                     generics.GenericAPIView):
     queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
+    serializer_class = SnippetSerializer_Model
     # (tutorial 4 Adding required permissions to views)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly] UPDATE for this one
     #(Tutorial 4 Object level permissions)
@@ -245,7 +245,7 @@ class SnippetDetail__Mixins(mixins.RetrieveModelMixin,
 
 class SnippetList_Generic(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
+    serializer_class = SnippetSerializer_Model
     ## adding in tutorial 4 to associate snippets with users
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -253,7 +253,7 @@ class SnippetList_Generic(generics.ListCreateAPIView):
 
 class SnippetDetail_Generic(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
+    serializer_class = SnippetSerializer_Model
     # (tutorial 4 Adding required permissions to views)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly] UPDATE for this one
     #(Tutorial 4 Object level permissions)
@@ -264,12 +264,12 @@ class SnippetDetail_Generic(generics.RetrieveUpdateDestroyAPIView):
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserSerializer_Model
 
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserSerializer_Model
 
 
 #(Tutorial 5 Creating an endpoint for the root of our API )

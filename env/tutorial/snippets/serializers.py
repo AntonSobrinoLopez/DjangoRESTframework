@@ -5,20 +5,20 @@ from django.contrib.auth.models import User
 owner = serializers.ReadOnlyField(source='owner.username')
 
 
-class SnippetSerializer_1(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    code = serializers.CharField(style={'base_template': 'textarea.html'})
-    linenos = serializers.BooleanField(required=False)
-    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
-    style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
+# class SnippetSerializer_Model(serializers.Serializer):
+#     id = serializers.IntegerField(read_only=True)
+#     title = serializers.CharField(required=False, allow_blank=True, max_length=100)
+#     code = serializers.CharField(style={'base_template': 'textarea.html'})
+#     linenos = serializers.BooleanField(required=False)
+#     language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+#     style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
 
 
 
 class SnippetSerializer_Model(serializers.ModelSerializer):
     class Meta:
         model = Snippet
-        fields = ['id', 'title', 'code', 'linenos', 'language', 'style', 'owner']
+        fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
 
     def create(self, validated_data):
         """
@@ -40,11 +40,11 @@ class SnippetSerializer_Model(serializers.ModelSerializer):
 
 # Tutorial 4 adding endpoints for our User models
 class UserSerializer_Model(serializers.ModelSerializer):
-    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+    snippets_Model = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'snippets', 'owner']
+        fields = ['id', 'username', 'snippets']
 
 
 #(Tutorial 5 Hyperlinking our API )
