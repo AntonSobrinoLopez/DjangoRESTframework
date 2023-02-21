@@ -31,7 +31,6 @@ from rest_framework import mixins
 from rest_framework import generics
 
 # (Tutorial 4 adding endpoints for our User models)
-
 from django.contrib.auth.models import User
 from snippets.serializers import UserSerializer_Model,UserSerializer
 

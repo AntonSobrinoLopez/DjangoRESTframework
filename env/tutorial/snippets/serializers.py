@@ -2,7 +2,7 @@ from rest_framework import serializers
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 from django.contrib.auth.models import User
 
-owner = serializers.ReadOnlyField(source='owner.username')
+# owner = serializers.ReadOnlyField(source='owner.username')
 
 
 class SnippetSerializer_1(serializers.Serializer):
@@ -12,13 +12,14 @@ class SnippetSerializer_1(serializers.Serializer):
     linenos = serializers.BooleanField(required=False)
     language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
     style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
 
 
 class SnippetSerializer_Model(serializers.ModelSerializer):
     class Meta:
         model = Snippet
-        fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
+        fields = ['id', 'title', 'code', 'linenos', 'language', 'style','owner']
 
     def create(self, validated_data):
         """
@@ -44,7 +45,7 @@ class UserSerializer_Model(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'snippets']
+        fields = ['id', 'username', 'snippets','owner']
 
 
 #(Tutorial 5 Hyperlinking our API )
@@ -61,8 +62,9 @@ class SnippetSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = User
-        fields = ['url', 'id', 'username', 'snippets']
+        fields = ['url', 'id', 'username', 'snippets','owner']
 
